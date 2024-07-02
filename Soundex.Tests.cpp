@@ -1,65 +1,58 @@
-#include <iostream>
-#include <cassert>
+#include <gtest/gtest.h>
 #include "Soundex.h"
 
-void testGetSoundexCode() {
-    assert(getSoundexCode('B') == '1');
-    assert(getSoundexCode('F') == '1');
-    assert(getSoundexCode('P') == '1');
-    assert(getSoundexCode('V') == '1');
-    assert(getSoundexCode('C') == '2');
-    assert(getSoundexCode('G') == '2');
-    assert(getSoundexCode('J') == '2');
-    assert(getSoundexCode('K') == '2');
-    assert(getSoundexCode('Q') == '2');
-    assert(getSoundexCode('S') == '2');
-    assert(getSoundexCode('X') == '2');
-    assert(getSoundexCode('Z') == '2');
-    assert(getSoundexCode('D') == '3');
-    assert(getSoundexCode('T') == '3');
-    assert(getSoundexCode('L') == '4');
-    assert(getSoundexCode('M') == '5');
-    assert(getSoundexCode('N') == '5');
-    assert(getSoundexCode('R') == '6');
-    assert(getSoundexCode('A') == '0');
-    assert(getSoundexCode('E') == '0');
-    assert(getSoundexCode('I') == '0');
-    assert(getSoundexCode('O') == '0');
-    assert(getSoundexCode('U') == '0');
-    assert(getSoundexCode('H') == '0');
-    assert(getSoundexCode('W') == '0');
-    assert(getSoundexCode('Y') == '0');
-    assert(getSoundexCode('1') == '0'); // Non-alphabetic character
-
-    std::cout << "All getSoundexCode() tests passed!\n";
+// Test getSoundexCode function
+TEST(GetSoundexCodeTest, BasicMappings) {
+    EXPECT_EQ(getSoundexCode('B'), '1');
+    EXPECT_EQ(getSoundexCode('F'), '1');
+    EXPECT_EQ(getSoundexCode('P'), '1');
+    EXPECT_EQ(getSoundexCode('V'), '1');
+    EXPECT_EQ(getSoundexCode('C'), '2');
+    EXPECT_EQ(getSoundexCode('G'), '2');
+    EXPECT_EQ(getSoundexCode('J'), '2');
+    EXPECT_EQ(getSoundexCode('K'), '2');
+    EXPECT_EQ(getSoundexCode('Q'), '2');
+    EXPECT_EQ(getSoundexCode('S'), '2');
+    EXPECT_EQ(getSoundexCode('X'), '2');
+    EXPECT_EQ(getSoundexCode('Z'), '2');
+    EXPECT_EQ(getSoundexCode('D'), '3');
+    EXPECT_EQ(getSoundexCode('T'), '3');
+    EXPECT_EQ(getSoundexCode('L'), '4');
+    EXPECT_EQ(getSoundexCode('M'), '5');
+    EXPECT_EQ(getSoundexCode('N'), '5');
+    EXPECT_EQ(getSoundexCode('R'), '6');
+    EXPECT_EQ(getSoundexCode('A'), '0');
+    EXPECT_EQ(getSoundexCode('E'), '0');
+    EXPECT_EQ(getSoundexCode('I'), '0');
+    EXPECT_EQ(getSoundexCode('O'), '0');
+    EXPECT_EQ(getSoundexCode('U'), '0');
+    EXPECT_EQ(getSoundexCode('H'), '0');
+    EXPECT_EQ(getSoundexCode('W'), '0');
+    EXPECT_EQ(getSoundexCode('Y'), '0');
+    EXPECT_EQ(getSoundexCode('1'), '0'); // Non-alphabetic character
 }
 
-void testGenerateSoundex() {
-    assert(generateSoundex("Washington") == "W252");
-    assert(generateSoundex("Jefferson") == "J162");
-    assert(generateSoundex("Adams") == "A352");
-    assert(generateSoundex("Lincoln") == "L525");
-    assert(generateSoundex("Madison") == "M325");
-    assert(generateSoundex("Monroe") == "M650");
-    assert(generateSoundex("Tyler") == "T460");
-    assert(generateSoundex("Truman") == "T655");
-    assert(generateSoundex("Kennedy") == "K530");
-    assert(generateSoundex("Eisenhower") == "E252");
+// Test generateSoundex function
+TEST(GenerateSoundexTest, BasicNames) {
+    EXPECT_EQ(generateSoundex("Washington"), "W252");
+    EXPECT_EQ(generateSoundex("Jefferson"), "J162");
+    EXPECT_EQ(generateSoundex("Adams"), "A352");
+    EXPECT_EQ(generateSoundex("Lincoln"), "L525");
+    EXPECT_EQ(generateSoundex("Madison"), "M325");
+    EXPECT_EQ(generateSoundex("Monroe"), "M650");
+    EXPECT_EQ(generateSoundex("Tyler"), "T460");
+    EXPECT_EQ(generateSoundex("Truman"), "T655");
+    EXPECT_EQ(generateSoundex("Kennedy"), "K530");
+    EXPECT_EQ(generateSoundex("Eisenhower"), "E252");
 
     // Edge cases
-    assert(generateSoundex("") == "");
-    assert(generateSoundex("A") == "A000");
-    assert(generateSoundex("W") == "W000");
-    assert(generateSoundex("XYZ") == "X200");
-
-    std::cout << "All generateSoundex() tests passed!\n";
+    EXPECT_EQ(generateSoundex(""), "");
+    EXPECT_EQ(generateSoundex("A"), "A000");
+    EXPECT_EQ(generateSoundex("W"), "W000");
+    EXPECT_EQ(generateSoundex("XYZ"), "X200");
 }
 
-int main() {
-    testGetSoundexCode();
-    testGenerateSoundex();
-
-    return 0;
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
-
-
