@@ -22,23 +22,33 @@ char getSoundexCode(char c) {
     return '0'; // Default case
 }
 
+// Function to accumulate Soundex codes from name
+std::string accumulateSoundexCodes(const std::string& name) {
+    std::string soundex(1, toupper(name[0]));
+    char prevCode = getSoundexCode(name[0]);
+
+    return std::accumulate(name.begin() + 1, name.end(), std::move(soundex),
+        [&prevCode](std::string& acc, char c) {
+            char code = getSoundexCode(c);
+            if (code != '0' && code != prevCode) {
+                acc += code;
+                prevCode = code;
+            }
+            return acc;
+        });
+}
+
+// Function to pad the Soundex code to 4 characters
+std::string padSoundex(const std::string& soundex) {
+    std::string paddedSoundex = soundex;
+    paddedSoundex.resize(4, '0');
+    return paddedSoundex;
+}
+
+// Main function to generate Soundex code
 std::string generateSoundex(const std::string& name) {
     if (name.empty()) return "";
 
-    std::string soundex(1, std::toupper(name[0]));
-    char prevCode = getSoundexCode(name[0]);
-
-    for (size_t i = 1; i < name.length() && soundex.length() < 4; ++i) {
-        char code = getSoundexCode(name[i]);
-        if (code != '0' && code != prevCode) {
-            soundex += code;
-            prevCode = code;
-        }
-    }
-
-    while (soundex.length() < 4) {
-        soundex += '0';
-    }
-
-    return soundex;
+    std::string soundex = accumulateSoundexCodes(name);
+    return padSoundex(soundex);
 }
