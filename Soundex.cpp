@@ -1,6 +1,7 @@
 #include <unordered_map>
 #include <cctype>
 #include <string>
+#include "Soundex.h"
 
 char getSoundexCode(char c) {
     static const std::unordered_map<char, char> soundexMap {
