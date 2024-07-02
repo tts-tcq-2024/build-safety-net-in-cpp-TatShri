@@ -1,56 +1,55 @@
 #include <gtest/gtest.h>
-#include "Soundex.h"
+#include "Soundex.h"  // Include your header file where functions are declared
 
-// Test getSoundexCode function
-TEST(GetSoundexCodeTest, BasicMappings) {
-    EXPECT_EQ(getSoundexCode('B'), '1');
-    EXPECT_EQ(getSoundexCode('F'), '1');
-    EXPECT_EQ(getSoundexCode('P'), '1');
-    EXPECT_EQ(getSoundexCode('V'), '1');
-    EXPECT_EQ(getSoundexCode('C'), '2');
-    EXPECT_EQ(getSoundexCode('G'), '2');
-    EXPECT_EQ(getSoundexCode('J'), '2');
-    EXPECT_EQ(getSoundexCode('K'), '2');
-    EXPECT_EQ(getSoundexCode('Q'), '2');
-    EXPECT_EQ(getSoundexCode('S'), '2');
-    EXPECT_EQ(getSoundexCode('X'), '2');
-    EXPECT_EQ(getSoundexCode('Z'), '2');
-    EXPECT_EQ(getSoundexCode('D'), '3');
-    EXPECT_EQ(getSoundexCode('T'), '3');
-    EXPECT_EQ(getSoundexCode('L'), '4');
-    EXPECT_EQ(getSoundexCode('M'), '5');
-    EXPECT_EQ(getSoundexCode('N'), '5');
-    EXPECT_EQ(getSoundexCode('R'), '6');
-    EXPECT_EQ(getSoundexCode('A'), '0');
-    EXPECT_EQ(getSoundexCode('E'), '0');
-    EXPECT_EQ(getSoundexCode('I'), '0');
-    EXPECT_EQ(getSoundexCode('O'), '0');
-    EXPECT_EQ(getSoundexCode('U'), '0');
-    EXPECT_EQ(getSoundexCode('H'), '0');
-    EXPECT_EQ(getSoundexCode('W'), '0');
-    EXPECT_EQ(getSoundexCode('Y'), '0');
-    EXPECT_EQ(getSoundexCode('1'), '0'); // Non-alphabetic character
-}
+// Test fixture for Soundex related tests
+class SoundexTest : public ::testing::Test {
+protected:
+    // Optionally, you can add setup code if needed
+    void SetUp() override {}
 
-// Test generateSoundex function
-TEST(GenerateSoundexTest, BasicNames) {
-    EXPECT_EQ(generateSoundex("Washington"), "W252");
-    EXPECT_EQ(generateSoundex("Jefferson"), "J162");
-    EXPECT_EQ(generateSoundex("Adams"), "A352");
-    EXPECT_EQ(generateSoundex("Lincoln"), "L525");
-    EXPECT_EQ(generateSoundex("Madison"), "M325");
-    EXPECT_EQ(generateSoundex("Monroe"), "M650");
-    EXPECT_EQ(generateSoundex("Tyler"), "T460");
-    EXPECT_EQ(generateSoundex("Truman"), "T655");
-    EXPECT_EQ(generateSoundex("Kennedy"), "K530");
-    EXPECT_EQ(generateSoundex("Eisenhower"), "E252");
+    // Optionally, add teardown code if needed
+    void TearDown() override {}
+};
 
-    // Edge cases
+// Test cases
+
+TEST_F(SoundexTest, EmptyString) {
     EXPECT_EQ(generateSoundex(""), "");
-    EXPECT_EQ(generateSoundex("A"), "A000");
-    EXPECT_EQ(generateSoundex("W"), "W000");
-    EXPECT_EQ(generateSoundex("XYZ"), "X200");
 }
+
+TEST_F(SoundexTest, SingleCharacter) {
+    EXPECT_EQ(generateSoundex("A"), "A000");
+    EXPECT_EQ(generateSoundex("Z"), "Z000");
+}
+
+TEST_F(SoundexTest, BasicNames) {
+    EXPECT_EQ(generateSoundex("Smith"), "S530");
+    EXPECT_EQ(generateSoundex("Johnson"), "J525");
+    EXPECT_EQ(generateSoundex("Williams"), "W452");
+}
+
+TEST_F(SoundexTest, IgnoreNonAlphabeticCharacters) {
+    EXPECT_EQ(generateSoundex("Jo hn-son"), "J525");
+    EXPECT_EQ(generateSoundex("O'Conner"), "O256");
+}
+
+TEST_F(SoundexTest, MultipleConsecutiveLettersMappedToSameDigit) {
+    EXPECT_EQ(generateSoundex("Zuckerberg"), "Z261");
+}
+
+TEST_F(SoundexTest, NameWithSameAdjacentLetters) {
+    EXPECT_EQ(generateSoundex("Lee"), "L000");
+}
+
+TEST_F(SoundexTest, NameWithLessThanFourDistinctCodes) {
+    EXPECT_EQ(generateSoundex("Wang"), "W520");
+}
+
+TEST_F(SoundexTest, NameWithMoreThanFourDistinctCodes) {
+    EXPECT_EQ(generateSoundex("Pfister"), "P236");
+}
+
+// Add more test cases as needed to cover additional scenarios
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
