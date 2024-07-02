@@ -1,6 +1,7 @@
 #include <unordered_map>
 #include <cctype>
 #include <string>
+#include <numeric> // Include numeric header for std::accumulate
 #include "Soundex.h"
 
 char getSoundexCode(char c) {
