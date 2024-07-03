@@ -1,8 +1,8 @@
+#include "Soundex.h"
 #include <unordered_map>
 #include <cctype>
 #include <string>
-#include <numeric> // Include numeric header for std::accumulate
-#include "Soundex.h"
+#include <numeric>
 
 char getSoundexCode(char c) {
     static const std::unordered_map<char, char> soundexMap {
@@ -19,29 +19,37 @@ char getSoundexCode(char c) {
     if (it != soundexMap.end()) {
         return it->second;
     }
-    return '0'; // Default case
+    return '0'; // Default case for vowels and other excluded characters
 }
-// Function to accumulate Soundex codes from name
+
 std::string accumulateSoundexCodes(const std::string& name) {
+    if (name.empty()) return "";
     std::string soundex(1, toupper(name[0]));
     char prevCode = getSoundexCode(name[0]);
-    return std::accumulate(name.begin() + 1, name.end(), std::move(soundex),
-        [&prevCode](std::string& acc, char c) {
-            char code = getSoundexCode(c);
-            if (code != '0' && code != prevCode) {
-                acc += code;
-                prevCode = code;
-            }
-            return acc;
-        });
+
+    auto accumulateFunc = [&prevCode](std::string acc, char c) {
+        char code = getSoundexCode(c);
+        if (code == '0') return acc; // Skip vowels and other excluded characters
+        if (code != prevCode || c == 'h' || c == 'w') {
+            acc += code;
+            prevCode = code;
+        }
+        return acc;
+    };
+
+    return std::accumulate(name.begin() + 1, name.end(), soundex, accumulateFunc);
 }
-// Function to pad the Soundex code to 4 characters
+
 std::string padSoundex(const std::string& soundex) {
     std::string paddedSoundex = soundex;
-    paddedSoundex.resize(4, '0');
+    if (paddedSoundex.size() < 4) {
+        paddedSoundex.resize(4, '0');
+    } else if (paddedSoundex.size() > 4) {
+        paddedSoundex = paddedSoundex.substr(0, 4);
+    }
     return paddedSoundex;
 }
-// Main function to generate Soundex code
+
 std::string generateSoundex(const std::string& name) {
     if (name.empty()) return "";
     std::string soundex = accumulateSoundexCodes(name);
