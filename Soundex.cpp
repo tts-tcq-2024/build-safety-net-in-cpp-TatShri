@@ -1,9 +1,7 @@
 #include "Soundex.h"
 #include <unordered_map>
 #include <cctype>
-#include <string>
 
-// Character mapping function
 char getSoundexCode(char c) {
     static const std::unordered_map<char, char> soundexMap {
         {'B', '1'}, {'F', '1'}, {'P', '1'}, {'V', '1'},
@@ -22,15 +20,17 @@ char getSoundexCode(char c) {
     return '0'; // Default case for vowels and other excluded characters
 }
 
-// Function to handle character skipping and duplicate removal
-void handleSoundexCharacter(std::string& soundex, char prevCode, char code, char currentChar) {
-    if (code != '0' && (code != prevCode || currentChar == 'h' || currentChar == 'w')) {
+void handleSoundexCharacter(std::string& soundex, char& prevCode, char code, char currentChar) {
+    if (code == '0') {
+        return; // Skip characters mapped to '0' (vowels and excluded characters)
+    }
+
+    if (code != prevCode || currentChar == 'h' || currentChar == 'w') {
         soundex += code;
         prevCode = code;
     }
 }
 
-// Function to accumulate Soundex codes from name
 std::string accumulateSoundexCodes(const std::string& name) {
     if (name.empty()) return "";
 
@@ -45,7 +45,6 @@ std::string accumulateSoundexCodes(const std::string& name) {
     return soundex;
 }
 
-// Function to pad the Soundex code to 4 characters
 std::string padSoundex(const std::string& soundex) {
     std::string paddedSoundex = soundex;
     if (paddedSoundex.size() < 4) {
@@ -56,7 +55,6 @@ std::string padSoundex(const std::string& soundex) {
     return paddedSoundex;
 }
 
-// Main function to generate Soundex code
 std::string generateSoundex(const std::string& name) {
     if (name.empty()) return "";
     std::string soundex = accumulateSoundexCodes(name);
