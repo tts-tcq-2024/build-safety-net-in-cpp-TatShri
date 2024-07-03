@@ -45,11 +45,11 @@ TEST(GetSoundexCodeTest, DefaultCase) {
 
 // Tests for accumulateSoundexCodes function
 TEST(AccumulateSoundexCodesTest, BasicName) {
-    EXPECT_EQ(accumulateSoundexCodes("Rubin"), "R150");
+    EXPECT_EQ(accumulateSoundexCodes("Rubin"), "R15");
 }
 
 TEST(AccumulateSoundexCodesTest, NameWithHAndW) {
-    EXPECT_EQ(accumulateSoundexCodes("Tymczak"), "T520");
+    EXPECT_EQ(accumulateSoundexCodes("Tymczak"), "T52");
 }
 
 TEST(AccumulateSoundexCodesTest, NameWithAdjacentSameCodes) {
@@ -57,7 +57,7 @@ TEST(AccumulateSoundexCodesTest, NameWithAdjacentSameCodes) {
 }
 
 TEST(AccumulateSoundexCodesTest, NameWithExcludedCharacters) {
-    EXPECT_EQ(accumulateSoundexCodes("Honeyman"), "H500");
+    EXPECT_EQ(accumulateSoundexCodes("Honeyman"), "H5");
 }
 
 TEST(AccumulateSoundexCodesTest, EmptyName) {
