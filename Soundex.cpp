@@ -20,22 +20,24 @@ char getSoundexCode(char c) {
     return '0'; // Default case for vowels and other excluded characters
 }
 
+// Function to determine if a character is a vowel or excluded character
+bool isVowelOrExcluded(char c) {
+    static const std::string vowelsAndExcluded = "AEIOUYHW";
+    return vowelsAndExcluded.find(std::toupper(c)) != std::string::npos;
+}
+
+// Function to determine if a character should be appended based on rules
+bool shouldAppend(char code, char prevCode, char currentChar) {
+    return (code != '0' && code != prevCode) || (currentChar == 'h') || (currentChar == 'w');
+}
+
+// Main function to handle encoding of Soundex character
 void handleSoundexCharacter(std::string& soundex, char& prevCode, char code, char currentChar) {
-    // Skip characters mapped to '0' (vowels and excluded characters)
-    if (code == '0') {
-        return;
-    }
-
-    // Determine if the character should be appended to soundex
-    bool shouldAppend = (code != prevCode) || (currentChar == 'h') || (currentChar == 'w');
-
-    if (shouldAppend) {
+    if (!isVowelOrExcluded(currentChar) && shouldAppend(code, prevCode, currentChar)) {
         soundex += code;
         prevCode = code;
     }
 }
-
-
 
 std::string accumulateSoundexCodes(const std::string& name) {
     if (name.empty()) return "";
