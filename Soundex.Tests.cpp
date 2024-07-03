@@ -38,7 +38,7 @@ TEST_F(SoundexTest, MultipleConsecutiveLettersMappedToSameDigit) {
 }
 
 TEST_F(SoundexTest, NameWithSameAdjacentLetters) {
-    EXPECT_EQ(generateSoundex("Lee"), "L000");
+    EXPECT_EQ(generateSoundex("Shree"), "S600");
 }
 
 TEST_F(SoundexTest, NameWithLessThanFourDistinctCodes) {
