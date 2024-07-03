@@ -41,10 +41,6 @@ std::string accumulateSoundexCodes(const std::string& name) {
     return acc;
 }
 
-
-    return std::accumulate(name.begin() + 1, name.end(), soundex, accumulateFunc);
-}
-
 std::string padSoundex(const std::string& soundex) {
     std::string paddedSoundex = soundex;
     if (paddedSoundex.size() < 4) {
