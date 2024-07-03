@@ -32,10 +32,9 @@ bool isVowelOrSpecial(char c) {
 
 // Helper function to process the current character in the Soundex accumulation
 bool shouldAddCode(char currentCode, char prevCode, char prevChar, char currentChar) {
-    if (currentCode == '0') return false; // Skip vowels and special characters
-    if (currentCode == prevCode && (prevChar != 'H' && prevChar != 'W')) return false; // Skip adjacent same codes
-    if ((prevChar == 'H' || prevChar == 'W') && currentCode == prevCode) return false; // Skip codes separated by H or W
-    return true;
+    return currentCode != '0' &&
+           !(currentCode == prevCode && (prevChar != 'H' && prevChar != 'W')) &&
+           !((prevChar == 'H' || 'W') && currentCode == prevCode);
 }
 
 // Function to accumulate Soundex codes from name
@@ -46,7 +45,7 @@ std::string accumulateSoundexCodes(const std::string& name) {
     char prevCode = getSoundexCode(name[0]);
     char prevChar = toupper(name[0]);
 
-    for (size_t i = 1; i < name.size(); ++i) {
+    for (size_t i = 1; i < name.size() && soundex.size() < 4; ++i) {
         char currentChar = toupper(name[i]);
         char currentCode = getSoundexCode(currentChar);
 
@@ -54,10 +53,6 @@ std::string accumulateSoundexCodes(const std::string& name) {
             soundex += currentCode;
             prevCode = currentCode;
             prevChar = currentChar;
-
-            if (soundex.size() == 4) {
-                break;
-            }
         }
     }
 
