@@ -24,18 +24,23 @@ char getSoundexCode(char c) {
 
 std::string accumulateSoundexCodes(const std::string& name) {
     if (name.empty()) return "";
+
     std::string soundex(1, toupper(name[0]));
     char prevCode = getSoundexCode(name[0]);
 
-    auto accumulateFunc = [&prevCode](std::string acc, char c) {
-        char code = getSoundexCode(c);
-        if (code == '0') return acc; // Skip vowels and other excluded characters
-        if (code != prevCode || c == 'h' || c == 'w') {
-            acc += code;
-            prevCode = code;
-        }
-        return acc;
-    };
+    std::string acc = std::accumulate(name.begin() + 1, name.end(), soundex,
+        [&prevCode](std::string& acc, char c) {
+            char code = getSoundexCode(c);
+            if (code != '0' && (code != prevCode || c == 'h' || c == 'w')) {
+                acc += code;
+                prevCode = code;
+            }
+            return acc;
+        });
+
+    return acc;
+}
+
 
     return std::accumulate(name.begin() + 1, name.end(), soundex, accumulateFunc);
 }
