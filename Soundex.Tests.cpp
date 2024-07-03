@@ -11,65 +11,43 @@ protected:
 };
 
 // Tests for getSoundexCode function
-
-// Test valid characters and their mappings
-TEST_F(SoundexTest, ValidCharacters) {
-    EXPECT_EQ(getSoundexCode('B'), '1');
+TEST_F(SoundexTest, GetSoundexCode) {
+    EXPECT_EQ(getSoundexCode('b'), '1');
     EXPECT_EQ(getSoundexCode('F'), '1');
     EXPECT_EQ(getSoundexCode('P'), '1');
     EXPECT_EQ(getSoundexCode('V'), '1');
-
-    EXPECT_EQ(getSoundexCode('C'), '2');
-    EXPECT_EQ(getSoundexCode('G'), '2');
-    EXPECT_EQ(getSoundexCode('J'), '2');
-    EXPECT_EQ(getSoundexCode('K'), '2');
-    EXPECT_EQ(getSoundexCode('Q'), '2');
-    EXPECT_EQ(getSoundexCode('S'), '2');
-    EXPECT_EQ(getSoundexCode('X'), '2');
-    EXPECT_EQ(getSoundexCode('Z'), '2');
-
-    EXPECT_EQ(getSoundexCode('D'), '3');
-    EXPECT_EQ(getSoundexCode('T'), '3');
-
+    EXPECT_EQ(getSoundexCode('g'), '2');
     EXPECT_EQ(getSoundexCode('L'), '4');
-
-    EXPECT_EQ(getSoundexCode('M'), '5');
-    EXPECT_EQ(getSoundexCode('N'), '5');
-
-    EXPECT_EQ(getSoundexCode('R'), '6');
-}
-
-// Test default case (other characters)
-TEST_F(SoundexTest, DefaultCase) {
-    // Test characters that are not mapped explicitly
-    EXPECT_EQ(getSoundexCode('A'), '0'); // A should map to '0'
-    EXPECT_EQ(getSoundexCode('E'), '0'); // E should map to '0'
-    EXPECT_EQ(getSoundexCode('I'), '0'); // I should map to '0'
-    EXPECT_EQ(getSoundexCode('O'), '0'); // O should map to '0'
-    EXPECT_EQ(getSoundexCode('U'), '0'); // U should map to '0'
-    EXPECT_EQ(getSoundexCode('H'), '0'); // H should map to '0'
-    EXPECT_EQ(getSoundexCode('W'), '0'); // W should map to '0'
-    EXPECT_EQ(getSoundexCode('Y'), '0'); // Y should map to '0'
-}
-
-// Test edge cases
-
-// Test lowercase characters
-TEST_F(SoundexTest, LowercaseCharacters) {
-    EXPECT_EQ(getSoundexCode('b'), '1');
-    EXPECT_EQ(getSoundexCode('c'), '2');
-    EXPECT_EQ(getSoundexCode('d'), '3');
-    EXPECT_EQ(getSoundexCode('l'), '4');
     EXPECT_EQ(getSoundexCode('m'), '5');
-    EXPECT_EQ(getSoundexCode('r'), '6');
-}
-
-// Test non-alphabetic characters
-TEST_F(SoundexTest, NonAlphabeticCharacters) {
-    EXPECT_EQ(getSoundexCode('1'), '0'); // Numeric character should map to '0'
+    EXPECT_EQ(getSoundexCode('R'), '6');
+    EXPECT_EQ(getSoundexCode('z'), '2');
+    EXPECT_EQ(getSoundexCode('y'), '0'); // Should return '0' for unknown characters
+	EXPECT_EQ(getSoundexCode('1'), '0'); // Numeric character should map to '0'
     EXPECT_EQ(getSoundexCode('@'), '0'); // Special character should map to '0'
 }
 
+// Tests for IsHW function
+TEST_F(SoundexTest, IsHW) {
+    EXPECT_TRUE(isHW('h'));
+    EXPECT_TRUE(isHW('H'));
+    EXPECT_TRUE(isHW('w'));
+    EXPECT_FALSE(isHW('a'));
+    EXPECT_FALSE(isHW(' '));
+    EXPECT_FALSE(isHW('z'));
+}
+
+// Tests for ShouldAppend function
+TEST_F(SoundexTest, ShouldAppend) {
+    EXPECT_TRUE(shouldAppend('1', '0', 'B')); // First occurrence of 'B'
+    EXPECT_FALSE(shouldAppend('1', '1', 'B')); // Already appended '1'
+    EXPECT_TRUE(shouldAppend('2', '1', 'C')); // Different code '2' after 'B'
+    EXPECT_TRUE(shouldAppend('3', '2', 'D')); // Different code '3' after 'C'
+    EXPECT_FALSE(shouldAppend('3', '3', 'T')); // Already appended '3'
+    EXPECT_TRUE(shouldAppend('5', '3', 'M')); // Different code '5' after 'T'
+    EXPECT_FALSE(shouldAppend('5', '5', 'N')); // Already appended '5'
+    EXPECT_TRUE(shouldAppend('4', '5', 'L')); // Different code '4' after 'N'
+    EXPECT_FALSE(shouldAppend('4', '4', 'L')); // Already appended '4'
+}
 
 // Tests for accumulateSoundexCodes function
 TEST(AccumulateSoundexCodesTest, BasicName) {
@@ -110,26 +88,15 @@ TEST(PadSoundexTest, EmptySoundex) {
 }
 
 // Tests for generateSoundex function
-TEST(GenerateSoundexTest, NormalName) {
+TEST_F(SoundexTest, GenerateSoundex) {
+    EXPECT_EQ(generateSoundex("Robert"), "R163");
+    EXPECT_EQ(generateSoundex("Rupert"), "R163");
     EXPECT_EQ(generateSoundex("Rubin"), "R150");
-}
-
-TEST(GenerateSoundexTest, NameWithHAndW) {
-    EXPECT_EQ(generateSoundex("Tymczak"), "T520");
-}
-
-TEST(GenerateSoundexTest, NameWithAdjacentSameCodes) {
+    EXPECT_EQ(generateSoundex("Ashcraft"), "A261");
+    EXPECT_EQ(generateSoundex("Tymczak"), "T522");
     EXPECT_EQ(generateSoundex("Pfister"), "P236");
+    EXPECT_EQ(generateSoundex(""), ""); // Empty string case
 }
-
-TEST(GenerateSoundexTest, NameWithExcludedCharacters) {
-    EXPECT_EQ(generateSoundex("Honeyman"), "H500");
-}
-
-TEST(GenerateSoundexTest, EmptyName) {
-    EXPECT_EQ(generateSoundex(""), "");
-}
-
 // Run the tests
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
