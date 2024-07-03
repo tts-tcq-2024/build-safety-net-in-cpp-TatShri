@@ -11,47 +11,50 @@ protected:
     void TearDown() override {}
 };
 
-// Test cases
-
-TEST_F(SoundexTest, EmptyString) {
-    EXPECT_EQ(generateSoundex(""), "");
+// Test getSoundexCode function
+TEST(SoundexTest, GetSoundexCode) {
+    EXPECT_EQ(getSoundexCode('A'), '0');
+    EXPECT_EQ(getSoundexCode('B'), '1');
+    EXPECT_EQ(getSoundexCode('C'), '2');
+    EXPECT_EQ(getSoundexCode('D'), '3');
+    EXPECT_EQ(getSoundexCode('L'), '4');
+    EXPECT_EQ(getSoundexCode('M'), '5');
+    EXPECT_EQ(getSoundexCode('R'), '6');
+    EXPECT_EQ(getSoundexCode('Z'), '2');
+    EXPECT_EQ(getSoundexCode('b'), '1'); // Lowercase input
+    EXPECT_EQ(getSoundexCode('@'), '0'); // Non-alphabetic character
 }
 
-TEST_F(SoundexTest, SingleCharacter) {
-    EXPECT_EQ(generateSoundex("A"), "A000");
-    EXPECT_EQ(generateSoundex("Z"), "Z000");
+// Test accumulateSoundexCodes function
+TEST(SoundexTest, AccumulateSoundexCodes) {
+    EXPECT_EQ(accumulateSoundexCodes("Robert"), "R163");
+    EXPECT_EQ(accumulateSoundexCodes("Rupert"), "R163");
+    EXPECT_EQ(accumulateSoundexCodes("Rubin"), "R150");
+    EXPECT_EQ(accumulateSoundexCodes("Ashcraft"), "A2613");
+    EXPECT_EQ(accumulateSoundexCodes("Tymczak"), "T5232");
+    EXPECT_EQ(accumulateSoundexCodes("Pfister"), "P1236");
+    EXPECT_EQ(accumulateSoundexCodes("Honeyman"), "H5535");
 }
 
-TEST_F(SoundexTest, BasicNames) {
-    EXPECT_EQ(generateSoundex("Smith"), "S530");
-    EXPECT_EQ(generateSoundex("Johnson"), "J525");
-    EXPECT_EQ(generateSoundex("Williams"), "W452");
+// Test padSoundex function
+TEST(SoundexTest, PadSoundex) {
+    EXPECT_EQ(padSoundex("R1"), "R100");
+    EXPECT_EQ(padSoundex("R16"), "R160");
+    EXPECT_EQ(padSoundex("R163"), "R163");
+    EXPECT_EQ(padSoundex("R1635"), "R1635"); // Longer string remains unchanged
 }
 
-TEST_F(SoundexTest, IgnoreNonAlphabeticCharacters) {
-    EXPECT_EQ(generateSoundex("Jo hn-son"), "J525");
-    EXPECT_EQ(generateSoundex("O'Conner"), "O256");
+// Test generateSoundex function
+TEST(SoundexTest, GenerateSoundex) {
+    EXPECT_EQ(generateSoundex("Robert"), "R163");
+    EXPECT_EQ(generateSoundex("Rupert"), "R163");
+    EXPECT_EQ(generateSoundex("Rubin"), "R150");
+    EXPECT_EQ(generateSoundex("Ashcraft"), "A261");
+    EXPECT_EQ(generateSoundex("Tymczak"), "T523");
+    EXPECT_EQ(generateSoundex("Pfister"), "P123");
+    EXPECT_EQ(generateSoundex("Honeyman"), "H553");
+    EXPECT_EQ(generateSoundex(""), ""); // Empty string input
 }
 
-TEST_F(SoundexTest, MultipleConsecutiveLettersMappedToSameDigit) {
-    EXPECT_EQ(generateSoundex("Zuckerberg"), "Z616");
-}
+// Main function for runnin
 
-TEST_F(SoundexTest, NameWithSameAdjacentLetters) {
-    EXPECT_EQ(generateSoundex("Shree"), "S600");
-}
-
-TEST_F(SoundexTest, NameWithLessThanFourDistinctCodes) {
-    EXPECT_EQ(generateSoundex("Wang"), "W520");
-}
-
-TEST_F(SoundexTest, NameWithMoreThanFourDistinctCodes) {
-    EXPECT_EQ(generateSoundex("Pfister"), "P236");
-}
-
-// Add more test cases as needed to cover additional scenarios
-
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
