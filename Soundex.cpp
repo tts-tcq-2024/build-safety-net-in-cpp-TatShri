@@ -24,6 +24,20 @@ char getSoundexCode(char c) {
     return '0'; // Default case for non-mapped characters
 }
 
+// Helper function to determine if a character is a vowel or special character
+bool isVowelOrSpecial(char c) {
+    static const std::string vowels = "AEIOUYHW";
+    return vowels.find(c) != std::string::npos;
+}
+
+// Helper function to process the current character in the Soundex accumulation
+bool shouldAddCode(char currentCode, char prevCode, char prevChar, char currentChar) {
+    if (currentCode == '0') return false; // Skip vowels and special characters
+    if (currentCode == prevCode && (prevChar != 'H' && prevChar != 'W')) return false; // Skip adjacent same codes
+    if ((prevChar == 'H' || prevChar == 'W') && currentCode == prevCode) return false; // Skip codes separated by H or W
+    return true;
+}
+
 // Function to accumulate Soundex codes from name
 std::string accumulateSoundexCodes(const std::string& name) {
     if (name.empty()) return "";
@@ -34,30 +48,16 @@ std::string accumulateSoundexCodes(const std::string& name) {
 
     for (size_t i = 1; i < name.size(); ++i) {
         char currentChar = toupper(name[i]);
-        char code = getSoundexCode(currentChar);
+        char currentCode = getSoundexCode(currentChar);
 
-        // Skip vowels and specific characters
-        if (code == '0') {
-            continue;
-        }
+        if (shouldAddCode(currentCode, prevCode, prevChar, currentChar)) {
+            soundex += currentCode;
+            prevCode = currentCode;
+            prevChar = currentChar;
 
-        // Handle adjacent encoding rule
-        if (code == prevCode && (prevChar != 'H' && prevChar != 'W')) {
-            continue;
-        }
-
-        if (prevChar == 'H' || prevChar == 'W') {
-            if (code == prevCode) {
-                continue;
+            if (soundex.size() == 4) {
+                break;
             }
-        }
-
-        soundex += code;
-        prevCode = code;
-        prevChar = currentChar;
-
-        if (soundex.size() == 4) {
-            break;
         }
     }
 
