@@ -33,6 +33,7 @@ bool shouldAppend(char code, char prevCode, char currentChar) {
 
 // Function to accumulate Soundex codes from name
 std::string accumulateSoundexCodes(const std::string& name) {
+    if (name.empty()) return "0000"; // Return "0000" for empty strings
     std::string soundex(1, toupper(name[0]));
     char prevCode = getSoundexCode(name[0]);
     
