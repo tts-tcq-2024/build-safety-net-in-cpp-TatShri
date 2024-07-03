@@ -20,10 +20,14 @@ char getSoundexCode(char c) {
     return '0'; // Default case for vowels and other excluded characters
 }
 
-// Function to determine if a character is a vowel or excluded character
-bool isVowelOrExcluded(char c) {
-    static const std::string vowelsAndExcluded = "AEIOUYHW";
-    return vowelsAndExcluded.find(std::toupper(c)) != std::string::npos;
+// Function to determine if a character should be appended based on Soundex rules
+bool shouldAppend(char code, char prevCode, char currentChar) {
+    return (code != '0' && code != prevCode) || isHW(currentChar);
+}
+
+// Function to determine if a character is 'H' or 'W'
+bool isHW(char c) {
+    return c == 'h' || c == 'w';
 }
 
 // Function to determine if a character should be appended based on rules
