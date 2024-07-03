@@ -25,21 +25,20 @@ char getSoundexCode(char c) {
 std::string accumulateSoundexCodes(const std::string& name) {
     if (name.empty()) return "";
 
-    std::string soundex(1, toupper(name[0]));
+    std::string soundex(1, std::toupper(name[0]));
     char prevCode = getSoundexCode(name[0]);
 
-    std::string acc = std::accumulate(name.begin() + 1, name.end(), soundex,
-        [&prevCode](std::string& acc, char c) {
-            char code = getSoundexCode(c);
-            if (code != '0' && (code != prevCode || c == 'h' || c == 'w')) {
-                acc += code;
-                prevCode = code;
-            }
-            return acc;
-        });
+    for (size_t i = 1; i < name.length(); ++i) {
+        char code = getSoundexCode(name[i]);
+        if (code != '0' && (code != prevCode || name[i] == 'h' || name[i] == 'w')) {
+            soundex += code;
+            prevCode = code;
+        }
+    }
 
-    return acc;
+    return soundex;
 }
+
 
 std::string padSoundex(const std::string& soundex) {
     std::string paddedSoundex = soundex;
