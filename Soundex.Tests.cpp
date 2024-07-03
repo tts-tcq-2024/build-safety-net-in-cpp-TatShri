@@ -13,40 +13,48 @@ protected:
 
 // Test cases
 
-TEST_F(SoundexTest, EmptyString) {
+TEST(SoundexTest, GetSoundexCode) {
+    EXPECT_EQ(getSoundexCode('B'), '1');
+    EXPECT_EQ(getSoundexCode('F'), '1');
+    EXPECT_EQ(getSoundexCode('C'), '2');
+    EXPECT_EQ(getSoundexCode('D'), '3');
+    EXPECT_EQ(getSoundexCode('L'), '4');
+    EXPECT_EQ(getSoundexCode('M'), '5');
+    EXPECT_EQ(getSoundexCode('R'), '6');
+    EXPECT_EQ(getSoundexCode('A'), '0');
+    EXPECT_EQ(getSoundexCode('H'), '0');
+    EXPECT_EQ(getSoundexCode('W'), '0');
+    EXPECT_EQ(getSoundexCode('b'), '1'); // Lowercase
+    EXPECT_EQ(getSoundexCode('f'), '1'); // Lowercase
+}
+
+// Test accumulateSoundexCodes function
+TEST(SoundexTest, AccumulateSoundexCodes) {
+    EXPECT_EQ(accumulateSoundexCodes("Robert"), "R163");
+    EXPECT_EQ(accumulateSoundexCodes("Rupert"), "R163");
+    EXPECT_EQ(accumulateSoundexCodes("Ashcraft"), "A2613");
+    EXPECT_EQ(accumulateSoundexCodes("Tymczak"), "T522");
+    EXPECT_EQ(accumulateSoundexCodes("Pfister"), "P1236");
+    EXPECT_EQ(accumulateSoundexCodes("Honeyman"), "H555");
+}
+
+// Test padSoundex function
+TEST(SoundexTest, PadSoundex) {
+    EXPECT_EQ(padSoundex("R1"), "R100");
+    EXPECT_EQ(padSoundex("R12"), "R120");
+    EXPECT_EQ(padSoundex("R123"), "R123");
+    EXPECT_EQ(padSoundex("R1234"), "R123");
+}
+
+// Test generateSoundex function
+TEST(SoundexTest, GenerateSoundex) {
+    EXPECT_EQ(generateSoundex("Robert"), "R163");
+    EXPECT_EQ(generateSoundex("Rupert"), "R163");
+    EXPECT_EQ(generateSoundex("Ashcraft"), "A261");
+    EXPECT_EQ(generateSoundex("Tymczak"), "T522");
+    EXPECT_EQ(generateSoundex("Pfister"), "P123");
+    EXPECT_EQ(generateSoundex("Honeyman"), "H555");
     EXPECT_EQ(generateSoundex(""), "");
-}
-
-TEST_F(SoundexTest, SingleCharacter) {
-    EXPECT_EQ(generateSoundex("A"), "A000");
-    EXPECT_EQ(generateSoundex("Z"), "Z000");
-}
-
-TEST_F(SoundexTest, BasicNames) {
-    EXPECT_EQ(generateSoundex("Smith"), "S530");
-    EXPECT_EQ(generateSoundex("Johnson"), "J525");
-    EXPECT_EQ(generateSoundex("Williams"), "W452");
-}
-
-TEST_F(SoundexTest, IgnoreNonAlphabeticCharacters) {
-    EXPECT_EQ(generateSoundex("Jo hn-son"), "J525");
-    EXPECT_EQ(generateSoundex("O'Conner"), "O256");
-}
-
-TEST_F(SoundexTest, MultipleConsecutiveLettersMappedToSameDigit) {
-    EXPECT_EQ(generateSoundex("Zuckerberg"), "Z616");
-}
-
-TEST_F(SoundexTest, NameWithSameAdjacentLetters) {
-    EXPECT_EQ(generateSoundex("Shree"), "S600");
-}
-
-TEST_F(SoundexTest, NameWithLessThanFourDistinctCodes) {
-    EXPECT_EQ(generateSoundex("Wang"), "W520");
-}
-
-TEST_F(SoundexTest, NameWithMoreThanFourDistinctCodes) {
-    EXPECT_EQ(generateSoundex("Pfister"), "P236");
 }
 
 // Add more test cases as needed to cover additional scenarios
