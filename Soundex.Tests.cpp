@@ -10,12 +10,13 @@ protected:
     void TearDown() override {}
 };
 
-// Tests for getSoundexCode function
-TEST(GetSoundexCodeTest, ValidCharacters) {
+// Test valid characters and their mappings
+TEST_F(GetSoundexCodeTest, ValidCharacters) {
     EXPECT_EQ(getSoundexCode('B'), '1');
     EXPECT_EQ(getSoundexCode('F'), '1');
     EXPECT_EQ(getSoundexCode('P'), '1');
     EXPECT_EQ(getSoundexCode('V'), '1');
+
     EXPECT_EQ(getSoundexCode('C'), '2');
     EXPECT_EQ(getSoundexCode('G'), '2');
     EXPECT_EQ(getSoundexCode('J'), '2');
@@ -24,23 +25,29 @@ TEST(GetSoundexCodeTest, ValidCharacters) {
     EXPECT_EQ(getSoundexCode('S'), '2');
     EXPECT_EQ(getSoundexCode('X'), '2');
     EXPECT_EQ(getSoundexCode('Z'), '2');
+
     EXPECT_EQ(getSoundexCode('D'), '3');
     EXPECT_EQ(getSoundexCode('T'), '3');
+
     EXPECT_EQ(getSoundexCode('L'), '4');
+
     EXPECT_EQ(getSoundexCode('M'), '5');
     EXPECT_EQ(getSoundexCode('N'), '5');
+
     EXPECT_EQ(getSoundexCode('R'), '6');
 }
 
-TEST(GetSoundexCodeTest, DefaultCase) {
-    EXPECT_EQ(getSoundexCode('A'), '0');
-    EXPECT_EQ(getSoundexCode('E'), '0');
-    EXPECT_EQ(getSoundexCode('I'), '0');
-    EXPECT_EQ(getSoundexCode('O'), '0');
-    EXPECT_EQ(getSoundexCode('U'), '0');
-    EXPECT_EQ(getSoundexCode('H'), '0');
-    EXPECT_EQ(getSoundexCode('W'), '0');
-    EXPECT_EQ(getSoundexCode('Y'), '0');
+// Test default case (other characters)
+TEST_F(GetSoundexCodeTest, DefaultCase) {
+    // Test characters that are not mapped explicitly
+    EXPECT_EQ(getSoundexCode('A'), '0'); // A should map to '0'
+    EXPECT_EQ(getSoundexCode('E'), '0'); // E should map to '0'
+    EXPECT_EQ(getSoundexCode('I'), '0'); // I should map to '0'
+    EXPECT_EQ(getSoundexCode('O'), '0'); // O should map to '0'
+    EXPECT_EQ(getSoundexCode('U'), '0'); // U should map to '0'
+    EXPECT_EQ(getSoundexCode('H'), '0'); // H should map to '0'
+    EXPECT_EQ(getSoundexCode('W'), '0'); // W should map to '0'
+    EXPECT_EQ(getSoundexCode('Y'), '0'); // Y should map to '0'
 }
 
 // Tests for accumulateSoundexCodes function
