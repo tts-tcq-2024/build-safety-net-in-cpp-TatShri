@@ -13,7 +13,7 @@ protected:
 // Tests for getSoundexCode function
 
 // Test valid characters and their mappings
-TEST_F(GetSoundexCodeTest, ValidCharacters) {
+TEST_F(SoundexTest, ValidCharacters) {
     EXPECT_EQ(getSoundexCode('B'), '1');
     EXPECT_EQ(getSoundexCode('F'), '1');
     EXPECT_EQ(getSoundexCode('P'), '1');
@@ -40,7 +40,7 @@ TEST_F(GetSoundexCodeTest, ValidCharacters) {
 }
 
 // Test default case (other characters)
-TEST_F(GetSoundexCodeTest, DefaultCase) {
+TEST_F(SoundexTest, DefaultCase) {
     // Test characters that are not mapped explicitly
     EXPECT_EQ(getSoundexCode('A'), '0'); // A should map to '0'
     EXPECT_EQ(getSoundexCode('E'), '0'); // E should map to '0'
@@ -55,7 +55,7 @@ TEST_F(GetSoundexCodeTest, DefaultCase) {
 // Test edge cases
 
 // Test lowercase characters
-TEST_F(GetSoundexCodeTest, LowercaseCharacters) {
+TEST_F(SoundexTest, LowercaseCharacters) {
     EXPECT_EQ(getSoundexCode('b'), '1');
     EXPECT_EQ(getSoundexCode('c'), '2');
     EXPECT_EQ(getSoundexCode('d'), '3');
@@ -65,7 +65,7 @@ TEST_F(GetSoundexCodeTest, LowercaseCharacters) {
 }
 
 // Test non-alphabetic characters
-TEST_F(GetSoundexCodeTest, NonAlphabeticCharacters) {
+TEST_F(SoundexTest, NonAlphabeticCharacters) {
     EXPECT_EQ(getSoundexCode('1'), '0'); // Numeric character should map to '0'
     EXPECT_EQ(getSoundexCode('@'), '0'); // Special character should map to '0'
 }
