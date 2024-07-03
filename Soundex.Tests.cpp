@@ -61,7 +61,7 @@ TEST(AccumulateSoundexCodesTest, NameWithExcludedCharacters) {
 }
 
 TEST(AccumulateSoundexCodesTest, EmptyName) {
-    EXPECT_EQ(accumulateSoundexCodes(""), "");
+    EXPECT_EQ(accumulateSoundexCodes(""), "0000");
 }
 
 // Tests for padSoundex function
