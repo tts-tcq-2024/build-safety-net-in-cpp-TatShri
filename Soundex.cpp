@@ -21,15 +21,15 @@ char getSoundexCode(char c) {
 }
 
 void handleSoundexCharacter(std::string& soundex, char& prevCode, char code, char currentChar) {
-    if (code == '0') {
-        return; // Skip characters mapped to '0' (vowels and excluded characters)
-    }
+    // Determine if the character should be appended to soundex
+    bool shouldAppend = (code != '0' && (code != prevCode || currentChar == 'h' || currentChar == 'w'));
 
-    if (code != prevCode || currentChar == 'h' || currentChar == 'w') {
+    if (shouldAppend) {
         soundex += code;
         prevCode = code;
     }
 }
+
 
 std::string accumulateSoundexCodes(const std::string& name) {
     if (name.empty()) return "";
