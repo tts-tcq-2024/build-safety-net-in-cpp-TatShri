@@ -7,6 +7,8 @@
 #include <numeric>
 
 char getSoundexCode(char c);
+bool isHW(char c);
+bool shouldAppend(char code, char prevCode, char currentChar);
 std::string accumulateSoundexCodes(const std::string& name);
 std::string padSoundex(const std::string& soundex);
 std::string generateSoundex(const std::string& name);
