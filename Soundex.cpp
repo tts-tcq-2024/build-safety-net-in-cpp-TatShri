@@ -1,70 +1,61 @@
-#include <vector>
-#include <cctype>
+#include <iostream>
 #include <string>
+#include <cctype>
+#include <unordered_map>
+#include "Soundex.h"
 
-static const std::vector<std::pair<char, char>> soundexMap {
+
+Soundex::Soundex() : soundexMap {
     {'B', '1'}, {'F', '1'}, {'P', '1'}, {'V', '1'},
-    {'C', '2'}, {'G', '2'}, {'J', '2'}, {'K', '2'},
-    {'Q', '2'}, {'S', '2'}, {'X', '2'}, {'Z', '2'},
+    {'C', '2'}, {'G', '2'}, {'J', '2'}, {'K', '2'}, {'Q', '2'},
+    {'S', '2'}, {'X', '2'}, {'Z', '2'},
     {'D', '3'}, {'T', '3'},
     {'L', '4'},
     {'M', '5'}, {'N', '5'},
     {'R', '6'}
-};
+} {}
 
-char mapCharToSoundex(char c, const std::vector<std::pair<char, char>>& soundexMap) {
+char Soundex::mapCharToSoundex(char c) const {
     c = std::toupper(c);
-    for (const auto& pair : soundexMap) {
-        if (pair.first == c) {
-            return pair.second;
+    auto it = soundexMap.find(c);
+    return (it != soundexMap.end()) ? it->second : '0'; // Default case for unknown characters
+}
+
+bool Soundex::isSeparator(char currentChar) const {
+    return std::isalpha(currentChar) && (currentChar == 'H' || currentChar == 'W');
+}
+
+void Soundex::appendValidSoundexCode(std::string& soundex, char code, char& prevCode, char currentChar) const {
+    if (code != '0') {
+        if (std::isalpha(currentChar) && !isSeparator(currentChar)) { // Check if currentChar is a vowel
+            // Check if prevCode and code are the same
+            if (code == prevCode) {
+                soundex += code; // Append code twice for vowels
+            } else {
+                soundex += code; // Append code once
+                prevCode = code;
+            }
+        } else {
+            soundex += code; // Append code once
+            prevCode = code;
         }
     }
-    return '0';
 }
 
-bool canAppend(char code, char prevCode, char currentChar) {
-    if (currentChar == 'h' || currentChar == 'w') {
-        return true;
-    }
-    return isSoundexDifferent(code, prevCode);
-}
+std::string Soundex::generateSoundex(const std::string& name) const {
+    if (name.empty()) return "";
 
-bool isSoundexDifferent(char code, char prevCode) {
-    return (code != '0' && code != prevCode);
-}
-
-void appendSoundexCode(std::string& soundex, char code, char& prevCode, char currentChar) {
-    if (canAppend(code, prevCode, currentChar)) {
-        soundex += code;
-        prevCode = code;
-    }
-}
-
-std::string computeSoundexCodes(const std::string& name, const std::vector<std::pair<char, char>>& soundexMap) {
     std::string soundex(1, std::toupper(name[0]));
-    char prevCode = mapCharToSoundex(name[0], soundexMap);
+    char prevCode = mapCharToSoundex(name[0]);
 
-    for (std::size_t i = 1; i < name.size(); ++i) {
-        char c = name[i];
-        char code = mapCharToSoundex(c, soundexMap);
-        appendSoundexCode(soundex, code, prevCode, c);
+    for (size_t i = 1; i < name.size() && soundex.size() < 4; ++i) {
+        char c = std::tolower(name[i]);
+        char code = mapCharToSoundex(c);
+        appendValidSoundexCode(soundex, code, prevCode, name[i]);
     }
+
+    soundex.resize(4, '0'); // Pad with zeros if necessary
 
     return soundex;
 }
 
-std::string formatSoundex(const std::string& soundex) {
-    return soundex.size() < 4 ? soundex + std::string(4 - soundex.size(), '0') : soundex;
-}
-
-std::string generateSoundex(const std::string& name, const std::vector<std::pair<char, char>>& soundexMap) {
-    if (name.empty()) return "";
-    std::string soundex = computeSoundexCodes(name, soundexMap);
-    return formatSoundex(soundex);
-}
-
-int main() {
-    std::string name = "Example";
-    std::string soundexCode = generateSoundex(name, soundexMap);
-    // Output or use the soundexCode as needed
-}
