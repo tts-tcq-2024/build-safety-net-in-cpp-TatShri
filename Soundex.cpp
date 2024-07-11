@@ -1,63 +1,70 @@
-#include <unordered_map>
+#include <vector>
 #include <cctype>
 #include <string>
-#include <numeric> // Include numeric header for std::accumulate
 
-char getSoundexCode(char c) {
-    static const std::unordered_map<char, char> soundexMap {
-        {'B', '1'}, {'F', '1'}, {'P', '1'}, {'V', '1'},
-        {'C', '2'}, {'G', '2'}, {'J', '2'}, {'K', '2'},
-        {'Q', '2'}, {'S', '2'}, {'X', '2'}, {'Z', '2'},
-        {'D', '3'}, {'T', '3'},
-        {'L', '4'},
-        {'M', '5'}, {'N', '5'},
-        {'R', '6'}
-    };
+static const std::vector<std::pair<char, char>> soundexMap {
+    {'B', '1'}, {'F', '1'}, {'P', '1'}, {'V', '1'},
+    {'C', '2'}, {'G', '2'}, {'J', '2'}, {'K', '2'},
+    {'Q', '2'}, {'S', '2'}, {'X', '2'}, {'Z', '2'},
+    {'D', '3'}, {'T', '3'},
+    {'L', '4'},
+    {'M', '5'}, {'N', '5'},
+    {'R', '6'}
+};
+
+char mapCharToSoundex(char c, const std::vector<std::pair<char, char>>& soundexMap) {
     c = std::toupper(c);
-    auto it = soundexMap.find(c);
-    if (it != soundexMap.end()) {
-        return it->second;
+    for (const auto& pair : soundexMap) {
+        if (pair.first == c) {
+            return pair.second;
+        }
     }
-    return '0'; // Default case
+    return '0';
 }
 
-// Function to determine if a character is 'H' or 'W'
-bool isHW(char c) {
-    return c == 'h' || c == 'w';
+bool canAppend(char code, char prevCode, char currentChar) {
+    if (currentChar == 'h' || currentChar == 'w') {
+        return true;
+    }
+    return isSoundexDifferent(code, prevCode);
 }
 
-// Function to determine if a character should be appended based on Soundex rules
-bool shouldAppend(char code, char prevCode, char currentChar) {
-    return (code != '0' && code != prevCode) || isHW(currentChar);
+bool isSoundexDifferent(char code, char prevCode) {
+    return (code != '0' && code != prevCode);
 }
 
-// Function to accumulate Soundex codes from name
-std::string accumulateSoundexCodes(const std::string& name) {
-    if (name.empty()) return "0000"; // Return "0000" for empty strings
-    std::string soundex(1, toupper(name[0]));
-    char prevCode = getSoundexCode(name[0]);
-    
-    return std::accumulate(name.begin() + 1, name.end(), std::move(soundex),
-        [&prevCode](std::string& acc, char c) {
-            char code = getSoundexCode(c);
-            if (shouldAppend(code, prevCode, c)) {
-                acc += code;
-                prevCode = code;
-            }
-            return acc;
-        });
+void appendSoundexCode(std::string& soundex, char code, char& prevCode, char currentChar) {
+    if (canAppend(code, prevCode, currentChar)) {
+        soundex += code;
+        prevCode = code;
+    }
 }
 
-// Function to pad the Soundex code to 4 characters
-std::string padSoundex(const std::string& soundex) {
-    std::string paddedSoundex = soundex;
-    paddedSoundex.resize(4, '0');
-    return paddedSoundex;
+std::string computeSoundexCodes(const std::string& name, const std::vector<std::pair<char, char>>& soundexMap) {
+    std::string soundex(1, std::toupper(name[0]));
+    char prevCode = mapCharToSoundex(name[0], soundexMap);
+
+    for (std::size_t i = 1; i < name.size(); ++i) {
+        char c = name[i];
+        char code = mapCharToSoundex(c, soundexMap);
+        appendSoundexCode(soundex, code, prevCode, c);
+    }
+
+    return soundex;
 }
 
-// Main function to generate Soundex code
-std::string generateSoundex(const std::string& name) {
+std::string formatSoundex(const std::string& soundex) {
+    return soundex.size() < 4 ? soundex + std::string(4 - soundex.size(), '0') : soundex;
+}
+
+std::string generateSoundex(const std::string& name, const std::vector<std::pair<char, char>>& soundexMap) {
     if (name.empty()) return "";
-    std::string soundex = accumulateSoundexCodes(name);
-    return padSoundex(soundex);
+    std::string soundex = computeSoundexCodes(name, soundexMap);
+    return formatSoundex(soundex);
+}
+
+int main() {
+    std::string name = "Example";
+    std::string soundexCode = generateSoundex(name, soundexMap);
+    // Output or use the soundexCode as needed
 }
