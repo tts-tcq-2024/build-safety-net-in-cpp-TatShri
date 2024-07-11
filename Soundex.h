@@ -4,7 +4,18 @@
 #include <string>
 #include <vector>
 
-// Public function for generating Soundex code
-std::string generateSoundex(const std::string& name, const std::vector<std::pair<char, char>>& soundexMap);
+class Soundex {
+public:
+    Soundex();
+
+    std::string generateSoundex(const std::string& name) const;
+
+private:
+    std::unordered_map<char, char> soundexMap;
+
+    char mapCharToSoundex(char c) const;
+    bool isSeparator(char currentChar) const;
+    void appendValidSoundexCode(std::string& soundex, char code, char& prevCode, char currentChar) const;
+};
 
 #endif // SOUNDEX_H
