@@ -53,7 +53,7 @@ std::string Soundex::generateSoundex(const std::string& name) const {
         appendValidSoundexCode(soundex, code, prevCode, name[i]);
     }
 
-    soundex.resize(4, '0'); // Pad with zeros if necessary
+    soundex.resize(4, '0'); // Pad with zeros if size is < 4
 
     return soundex;
 }
