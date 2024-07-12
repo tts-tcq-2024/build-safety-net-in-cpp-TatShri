@@ -28,7 +28,6 @@ bool Soundex::isSeparator(char currentChar) const {
 void Soundex::appendValidSoundexCode(std::string& soundex, char code, char& prevCode, char currentChar) const {
     if (code != '0') {
         if (std::isalpha(currentChar) && !isSeparator(currentChar)) { // Check if currentChar is a vowel
-            // Check if prevCode and code are the same
             if (code == prevCode) {
                 soundex += code; // Append code twice for vowels
             } else {
