@@ -41,31 +41,32 @@ std::string removeNonAlphabetic(const std::string& name) {
 bool checkForAdjacentSameCode(char currentCode, char prevCode) {
     return currentCode == prevCode;
 }
-
-// Functions to check if there is an 'H' or 'W' between same-coded letters
-bool isHOrWCharacter(char c) {
-    return std::toupper(c) == 'H' || std::toupper(c) == 'W';
-}
-
 // Function to check if a character is a vowel (A, E, I, O, U)
 bool isVowel(char c) {
     c = std::toupper(c);
     return c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U';
 }
-
-bool checkForHOrWBetweenSameCode(const std::string& name, size_t index, char currentCode) {
-    if (index > 1) {
-        char prevChar = name[index - 1];
-        char prevCode = getSoundexCode(prevChar);
-        char prevPrevChar = name[index - 2];
-
-        if ((isHOrWCharacter(prevChar) && prevCode == currentCode) ||
-            (isHOrWCharacter(prevChar) && isVowel(prevPrevChar) && prevPrevChar != 'Y')) {
-            return true;
-        }
-    }
-    return false;
+// Functions to check if there is an 'H' or 'W' between same-coded letters
+bool isHOrWCharacter(char c) {
+    return std::toupper(c) == 'H' || std::toupper(c) == 'W';
 }
+// Function to check if there is 'H' or 'W' between same-coded letters
+bool checkForHOrWBetweenSameCode(const std::string& name, size_t index, char currentCode) {
+    if (index <= 1) {
+        return false; // No previous character to check
+    }
+
+    char prevChar = name[index - 1];
+    char prevCode = getSoundexCode(prevChar);
+    char prevPrevChar = name[index - 2];
+
+    bool isPrevCharHOrW = isHOrWCharacter(prevChar);
+    bool hasSameSoundexCode = (prevCode == currentCode);
+    bool isPrevPrevCharVowel = isVowel(prevPrevChar) && prevPrevChar != 'Y';
+
+    return (isPrevCharHOrW && hasSameSoundexCode) || (isPrevCharHOrW && isPrevPrevCharVowel);
+}
+
 
 // Function to determine if a Soundex code should be added
 bool shouldAddSoundexCode(char code, char prevCode, const std::string& name, size_t index) {
