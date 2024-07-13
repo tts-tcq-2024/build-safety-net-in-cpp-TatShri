@@ -1,60 +1,86 @@
-#include <iostream>
-#include <string>
-#include <cctype>
-#include <unordered_map>
 #include "Soundex.h"
+#include <cctype>
+#include <string>
 
+// Function to get the Soundex code for a given character
+char getSoundexCode(char c) {
+    static const char soundexTable[26] = {
+        // A  B  C  D  E  F  G  H  I  J  K  L  M
+           '0', '1', '2', '3', '0', '1', '2', '0', '0', '2', '2', '4', '5',
+        // N  O  P  Q  R  S  T  U  V  W  X  Y  Z
+           '5', '0', '1', '2', '6', '2', '3', '0', '1', '0', '2', '0', '2'
+    };
 
-Soundex::Soundex() : soundexMap {
-    {'B', '1'}, {'F', '1'}, {'P', '1'}, {'V', '1'},
-    {'C', '2'}, {'G', '2'}, {'J', '2'}, {'K', '2'}, {'Q', '2'},
-    {'S', '2'}, {'X', '2'}, {'Z', '2'},
-    {'D', '3'}, {'T', '3'},
-    {'L', '4'},
-    {'M', '5'}, {'N', '5'},
-    {'R', '6'}
-} {}
-
-char Soundex::mapCharToSoundex(char c) const {
-    c = std::toupper(c);
-    auto it = soundexMap.find(c);
-    return (it != soundexMap.end()) ? it->second : '0'; // Default case for unknown characters
+    if (std::isalpha(c)) {
+        c = std::toupper(c);
+        return soundexTable[c - 'A'];
+    }
+    return '0'; // For non-alphabetic characters
 }
 
-bool Soundex::isSeparator(char currentChar) const {
-    return std::isalpha(currentChar) && (currentChar == 'H' || currentChar == 'W');
+// Function to capitalize the first letter of the name
+std::string capitalizeFirstLetter(const std::string& name) {
+    if (name.empty()) return "";
+    std::string capitalized = name;
+    capitalized[0] = std::toupper(capitalized[0]);
+    return capitalized;
 }
 
-void Soundex::appendValidSoundexCode(std::string& soundex, char code, char& prevCode, char currentChar) const {
-    if (code != '0') {
-        if (std::isalpha(currentChar) && !isSeparator(currentChar)) { // Check if currentChar is a vowel
-            if (code == prevCode) {
-                soundex += code; // Append code twice for vowels
-            } else {
-                soundex += code; // Append code once
-                prevCode = code;
-            }
-        } else {
-            soundex += code; // Append code once
-            prevCode = code;
+// Function to remove non-alphabetic characters from the name
+std::string removeNonAlphabetic(const std::string& name) {
+    std::string cleaned;
+    for (char c : name) {
+        if (std::isalpha(c)) {
+            cleaned += c;
         }
     }
+    return cleaned;
 }
 
-std::string Soundex::generateSoundex(const std::string& name) const {
+// Function to check if the current code is the same as the previous code
+bool checkForAdjacentSameCode(char currentCode, char prevCode) {
+    return currentCode == prevCode;
+}
+
+// Function to check if there is an 'H' or 'W' between same-coded letters
+bool checkForHOrWBetweenSameCode(const std::string& name, size_t index, char currentCode) {
+    return (index > 1 && (std::toupper(name[index - 1]) == 'H' || std::toupper(name[index - 1]) == 'W') &&
+            getSoundexCode(name[index - 2]) == currentCode);
+}
+
+// Function to encode the name according to Soundex rules
+std::string encodeName(const std::string& name) {
     if (name.empty()) return "";
 
     std::string soundex(1, std::toupper(name[0]));
-    char prevCode = mapCharToSoundex(name[0]);
+    char prevCode = getSoundexCode(name[0]);
 
-    for (size_t i = 1; i < name.size() && soundex.size() < 4; ++i) {
-        char c = std::tolower(name[i]);
-        char code = mapCharToSoundex(c);
-        appendValidSoundexCode(soundex, code, prevCode, name[i]);
+    for (size_t i = 1; i < name.length() && soundex.length() < 4; ++i) {
+        char code = getSoundexCode(name[i]);
+
+        if (code != '0' &&
+            !checkForAdjacentSameCode(code, prevCode) &&
+            !checkForHOrWBetweenSameCode(name, i, code)) {
+            soundex += code;
+            prevCode = code;
+        }
     }
-
-    soundex.resize(4, '0'); // Pad with zeros if size is < 4
-
     return soundex;
 }
 
+// Function to pad the Soundex code to 4 characters
+std::string padSoundexCode(const std::string& soundex) {
+    std::string padded = soundex;
+    while (padded.length() < 4) {
+        padded += '0';
+    }
+    return padded;
+}
+
+// Main function to generate Soundex code for a given name
+std::string generateSoundex(const std::string& name) {
+    std::string cleanedName = removeNonAlphabetic(name);
+    std::string capitalized = capitalizeFirstLetter(cleanedName);
+    std::string encoded = encodeName(capitalized);
+    return padSoundexCode(encoded);
+}
