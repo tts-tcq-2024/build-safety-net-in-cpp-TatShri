@@ -31,9 +31,4 @@ TEST(GenerateSoundexTest, LongNames) {
     EXPECT_EQ(generateSoundex("Sakura Haruno"), "S265");
 }
 
-// Add more test cases as needed
 
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
