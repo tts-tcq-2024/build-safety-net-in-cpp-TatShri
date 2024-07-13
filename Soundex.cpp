@@ -53,26 +53,17 @@ bool isVowel(char c) {
     return c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U';
 }
 
-// Function to check if there is 'H' or 'W' between same-coded letters
 bool checkForHOrWBetweenSameCode(const std::string& name, size_t index, char currentCode) {
-    if (index <= 1) {
-        return false; // No previous character to check
+    if (index > 1) {
+        char prevChar = name[index - 1];
+        char prevCode = getSoundexCode(prevChar);
+        char prevPrevChar = name[index - 2];
+
+        if ((isHOrWCharacter(prevChar) && prevCode == currentCode) ||
+            (isHOrWCharacter(prevChar) && isVowel(prevPrevChar) && prevPrevChar != 'Y')) {
+            return true;
+        }
     }
-
-    char prevChar = name[index - 1];
-    char prevCode = getSoundexCode(prevChar);
-    char prevPrevChar = name[index - 2];
-
-    // Check if previous character is 'H' or 'W' and if the characters have the same Soundex code
-    if (isHOrWCharacter(prevChar) && prevCode == currentCode) {
-        return true;
-    }
-
-    // Check if previous character was 'H' or 'W' and the character before it is a vowel (except 'Y')
-    if (isHOrWCharacter(prevChar) && isVowel(prevPrevChar) && prevPrevChar != 'Y') {
-        return true;
-    }
-
     return false;
 }
 
