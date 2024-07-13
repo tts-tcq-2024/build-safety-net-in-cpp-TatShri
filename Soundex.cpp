@@ -42,23 +42,45 @@ bool checkForAdjacentSameCode(char currentCode, char prevCode) {
     return currentCode == prevCode;
 }
 
+// Functions to check if there is an 'H' or 'W' between same-coded letters
 bool isHOrWCharacter(char c) {
     return std::toupper(c) == 'H' || std::toupper(c) == 'W';
 }
 
+// Function to check if a character is a vowel (A, E, I, O, U)
 bool isVowel(char c) {
     c = std::toupper(c);
     return c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U';
 }
 
-bool checkForCurrentCharHOrW(char prevChar, char prevPrevChar) {
-    return isHOrWCharacter(prevChar) && getSoundexCode(prevChar) == getSoundexCode(prevPrevChar);
+// Function to check if there is 'H' or 'W' between same-coded letters
+bool checkForHOrWBetweenSameCode(const std::string& name, size_t index, char currentCode) {
+    if (index <= 1) {
+        return false; // No previous character to check
+    }
+
+    char prevChar = name[index - 1];
+    char prevCode = getSoundexCode(prevChar);
+    char prevPrevChar = name[index - 2];
+
+    // Check if previous character is 'H' or 'W' and if the characters have the same Soundex code
+    if (isHOrWCharacter(prevChar) && prevCode == currentCode) {
+        return true;
+    }
+
+    // Check if previous character was 'H' or 'W' and the character before it is a vowel (except 'Y')
+    if (isHOrWCharacter(prevChar) && isVowel(prevPrevChar) && prevPrevChar != 'Y') {
+        return true;
+    }
+
+    return false;
 }
 
+// Function to determine if a Soundex code should be added
 bool shouldAddSoundexCode(char code, char prevCode, const std::string& name, size_t index) {
     return (code != '0' &&
             !checkForAdjacentSameCode(code, prevCode) &&
-            !checkForHOrWBetweenSameCode(name, index, code));
+            !checkForHOrWBetweenSameCode(name, index, getSoundexCode(code)));
 }
 
 // Function to encode the name according to Soundex rules
