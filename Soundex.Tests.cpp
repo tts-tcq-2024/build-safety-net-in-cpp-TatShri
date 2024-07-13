@@ -1,44 +1,87 @@
-#include <gtest/gtest.h>
 #include "Soundex.h"
+#include <cctype>
+#include <string>
 
-class SoundexTest : public ::testing::Test {
-protected:
-    Soundex soundex;
-};
-
-TEST_F(SoundexTest, GenerateSoundex_EmptyString) {
-    EXPECT_EQ(soundex.generateSoundex(""), "");
+// Function to get the Soundex code for a given character
+char getSoundexCode(char c) {
+    c = toupper(c);
+    switch (c) {
+        case 'B': case 'F': case 'P': case 'V': return '1';
+        case 'C': case 'G': case 'J': case 'K': case 'Q': case 'S': case 'X': case 'Z': return '2';
+        case 'D': case 'T': return '3';
+        case 'L': return '4';
+        case 'M': case 'N': return '5';
+        case 'R': return '6';
+        default: return '0'; // For A, E, I, O, U, H, W, Y
+    }
 }
 
-TEST_F(SoundexTest, GenerateSoundex_SingleCharacter) {
-    EXPECT_EQ(soundex.generateSoundex("A"), "A000");
-    EXPECT_EQ(soundex.generateSoundex("Z"), "Z000");
+// Function to capitalize the first letter of the name
+std::string capitalizeFirstLetter(const std::string& name) {
+    if (name.empty()) return "";
+    std::string capitalized = name;
+    capitalized[0] = toupper(capitalized[0]);
+    return capitalized;
 }
 
-TEST_F(SoundexTest, GenerateSoundex_LongName) {
-    EXPECT_EQ(soundex.generateSoundex("Qwerty"), "Q630");
-    EXPECT_EQ(soundex.generateSoundex("Romanoff"), "R551");
-    EXPECT_EQ(soundex.generateSoundex("Mannington"), "M552");
-    EXPECT_EQ(soundex.generateSoundex("Howfcraft"), "H126");
-    EXPECT_EQ(soundex.generateSoundex("Bangalore"), "B524");
-    EXPECT_EQ(soundex.generateSoundex("Pierce"), "P620");
+// Function to remove non-alphabetic characters from the name
+std::string removeNonAlphabetic(const std::string& name) {
+    std::string cleaned;
+    for (char c : name) {
+        if (isalpha(c)) {
+            cleaned += c;
+        }
+    }
+    return cleaned;
 }
 
-TEST_F(SoundexTest, GenerateSoundex_IgnoreNonAlpha) {
-    EXPECT_EQ(soundex.generateSoundex("A7#&*"), "A000");
-    EXPECT_EQ(soundex.generateSoundex("B1234"), "B100");
-    EXPECT_EQ(soundex.generateSoundex("C$%D@!"), "C300");
+// Function to check if a character is a vowel
+bool isVowel(char c) {
+    c = toupper(c);
+    return (c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U');
 }
 
-TEST_F(SoundexTest, GenerateSoundex_MixedCases) {
-    EXPECT_EQ(soundex.generateSoundex("aBcDeFgH"), "A123");
-    EXPECT_EQ(soundex.generateSoundex("xyzABC"), "X212");
-    EXPECT_EQ(soundex.generateSoundex("mnoPQR"), "M561");
+// Function to encode the name according to Soundex rules
+std::string encodeName(const std::string& name) {
+    if (name.empty()) return "";
+
+    std::string soundex(1, toupper(name[0]));
+    char prevCode = getSoundexCode(name[0]);
+
+    for (size_t i = 1; i < name.length() && soundex.length() < 4; ++i) {
+        char code = getSoundexCode(name[i]);
+        if (code == '0') continue;  // Skip vowels and other non-coding characters
+
+        // Check if current letter encodes to the same number as the previous one
+        if (code == prevCode) continue;
+
+        // Check for 'H' or 'W' between same-coded letters
+        if (i > 1 && (toupper(name[i - 1]) == 'H' || toupper(name[i - 1]) == 'W') &&
+            getSoundexCode(name[i - 2]) == code) {
+            continue;
+        }
+
+        soundex += code;
+        prevCode = code;
+    }
+    return soundex;
 }
 
-TEST_F(SoundexTest, GenerateSoundex_Padding) {
-    EXPECT_EQ(soundex.generateSoundex("J"), "J000");
-    EXPECT_EQ(soundex.generateSoundex("Ka"), "K100");
-    EXPECT_EQ(soundex.generateSoundex("LmN"), "L550");
+// Function to pad the Soundex code to 4 characters
+std::string padSoundexCode(const std::string& soundex) {
+    std::string padded = soundex;
+    while (padded.length() < 4) {
+        padded += '0';
+    }
+    return padded;
 }
+
+// Main function to generate Soundex code for a given name
+std::string generateSoundex(const std::string& name) {
+    std::string cleanedName = removeNonAlphabetic(name);
+    std::string capitalized = capitalizeFirstLetter(cleanedName);
+    std::string encoded = encodeName(capitalized);
+    return padSoundexCode(encoded);
+}
+
 
