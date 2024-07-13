@@ -42,10 +42,23 @@ bool checkForAdjacentSameCode(char currentCode, char prevCode) {
     return currentCode == prevCode;
 }
 
-// Function to check if there is an 'H' or 'W' between same-coded letters
-bool checkForHOrWBetweenSameCode(const std::string& name, size_t index, char currentCode) {
-    return (index > 1 && (std::toupper(name[index - 1]) == 'H' || std::toupper(name[index - 1]) == 'W') &&
-            getSoundexCode(name[index - 2]) == currentCode);
+bool isHOrWCharacter(char c) {
+    return std::toupper(c) == 'H' || std::toupper(c) == 'W';
+}
+
+bool isVowel(char c) {
+    c = std::toupper(c);
+    return c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U';
+}
+
+bool checkForCurrentCharHOrW(char prevChar, char prevPrevChar) {
+    return isHOrWCharacter(prevChar) && getSoundexCode(prevChar) == getSoundexCode(prevPrevChar);
+}
+
+bool shouldAddSoundexCode(char code, char prevCode, const std::string& name, size_t index) {
+    return (code != '0' &&
+            !checkForAdjacentSameCode(code, prevCode) &&
+            !checkForHOrWBetweenSameCode(name, index, code));
 }
 
 // Function to encode the name according to Soundex rules
@@ -58,9 +71,7 @@ std::string encodeName(const std::string& name) {
     for (size_t i = 1; i < name.length() && soundex.length() < 4; ++i) {
         char code = getSoundexCode(name[i]);
 
-        if (code != '0' &&
-            !checkForAdjacentSameCode(code, prevCode) &&
-            !checkForHOrWBetweenSameCode(name, i, code)) {
+        if (shouldAddSoundexCode(code, prevCode, name, i)) {
             soundex += code;
             prevCode = code;
         }
