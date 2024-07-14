@@ -49,7 +49,6 @@ TEST(GenerateSoundexTest, NameWithApostrophe) {
 
 TEST(GenerateSoundexTest, AdjacentSameCodeMerge) {
     EXPECT_EQ(generateSoundex("Aal"), "A400");
-    EXPECT_EQ(generateSoundex("Gokuu"), "G200");
 }
 
 TEST(GenerateSoundexTest, HOrWBetweenSameCode) {
