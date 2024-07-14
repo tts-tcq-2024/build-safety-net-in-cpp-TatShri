@@ -1,6 +1,7 @@
 #include "Soundex.h"
 #include <cctype>
 #include <string>
+#include <numeric>
 
 // Function to get the Soundex code for a given character
 char createandFetchSoundexcode(char c) {
