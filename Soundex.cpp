@@ -85,16 +85,26 @@ void validateSoundexCode(const std::string& name, size_t index, std::string& sou
     }
 }
 
-// Function to encode the name according to Soundex rules
+// Function to check the Soundex length and call validateSoundexCode if necessary
+void checkSoundexLength(const std::string& name, char c, std::string& soundex, char& prevCode) {
+    if (soundex.length() < 4) {
+        size_t index = &c - &name[0];
+        validateSoundexCode(name, index, soundex, prevCode);
+    }
+}
+
+// Function to encode the name according to Soundex rules using std::accumulate
 std::string encodeName(const std::string& name) {
     if (name.empty()) return "";
 
     std::string soundex(1, std::toupper(name[0]));
     char prevCode = createandFetchSoundexcode(name[0]);
 
-    for (size_t i = 1; i < name.length() && soundex.length() < 4; ++i) {
-        validateSoundexCode(name, i, soundex, prevCode);
-    }
+    std::accumulate(name.begin() + 1, name.end(), prevCode,
+        [&soundex, &name](char prevCode, char c) {
+            checkSoundexLength(name, c, soundex, prevCode);
+            return prevCode;
+        });
     return soundex;
 }
 
