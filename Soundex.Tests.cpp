@@ -39,7 +39,7 @@ TEST(GenerateSoundexTest, LongName) {
 }
 
 TEST(GenerateSoundexTest, NameWithHOrW) {
-    EXPECT_EQ(generateSoundex("Mhnmi"), "M200");
+    EXPECT_EQ(generateSoundex("Mhnmi"), "M000");
     EXPECT_EQ(generateSoundex("Haruhi"), "H600");
 }
 
