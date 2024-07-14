@@ -46,3 +46,18 @@ TEST(GenerateSoundexTest, NameWithHOrW) {
 TEST(GenerateSoundexTest, NameWithApostrophe) {
     EXPECT_EQ(generateSoundex("Itachi'Uchiha"), "I320");
 }
+
+TEST(GenerateSoundexTest, AdjacentSameCodeMerge) {
+    EXPECT_EQ(generateSoundex("Aal"), "A400");
+    EXPECT_EQ(generateSoundex("Gokuu"), "G200");
+}
+
+TEST(GenerateSoundexTest, HOrWBetweenSameCode) {
+    EXPECT_EQ(generateSoundex("Sushi"), "S000");
+    EXPECT_EQ(generateSoundex("Rush"), "R200");
+}
+
+TEST(GenerateSoundexTest, VowelBetweenSameCode) {
+    EXPECT_EQ(generateSoundex("Taco"), "T200");
+    EXPECT_EQ(generateSoundex("Ogre"), "O260");
+}
