@@ -37,14 +37,6 @@ std::string removeNonAlphabetic(const std::string& name) {
     return cleaned;
 }
 
-
-// Function to determine if a Soundex code should be added
-bool shouldAddSoundexCode(char code, char prevCode, const std::string& name, size_t index) {
-    return (code != '0' &&
-            !checkForAdjacentSameCode(code, prevCode) &&
-            !checkForHOrWBetweenSameCode(name, index, createandFetchSoundexcode(code)));
-}
-
 // Function to check if the current code is the same as the previous code
 bool checkForAdjacentSameCode(char currentCode, char prevCode) {
     return currentCode == prevCode;
@@ -74,6 +66,13 @@ bool isPrevPrevCharSameCode(const std::string& name, size_t index, char currentC
 // Function to check if there is an H or W character between two characters with the same Soundex code
 bool checkForHOrWBetweenSameCode(const std::string& name, size_t index, char currentCode) {
     return isPreviousCharHOrW(name, index) && isPrevPrevCharSameCode(name, index, currentCode);
+}
+
+// Function to determine if a Soundex code should be added
+bool shouldAddSoundexCode(char code, char prevCode, const std::string& name, size_t index) {
+    return (code != '0' &&
+            !checkForAdjacentSameCode(code, prevCode) &&
+            !checkForHOrWBetweenSameCode(name, index, code));
 }
 
 // Function to validate and potentially add the Soundex code
