@@ -3,7 +3,7 @@
 #include <string>
 
 // Function to get the Soundex code for a given character
-char getSoundexCode(char c) {
+char createandFetchSoundexcode(char c) {
     static const char soundexTable[26] = {
         // A  B  C  D  E  F  G  H  I  J  K  L  M
            '0', '1', '2', '3', '0', '1', '2', '0', '0', '2', '2', '4', '5',
@@ -37,42 +37,53 @@ std::string removeNonAlphabetic(const std::string& name) {
     return cleaned;
 }
 
-// Function to check if the current code is the same as the previous code
-bool checkForAdjacentSameCode(char currentCode, char prevCode) {
-    return currentCode == prevCode;
-}
-// Function to check if a character is a vowel (A, E, I, O, U)
-bool isVowel(char c) {
-    c = std::toupper(c);
-    return c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U';
-}
-// Functions to check if there is an 'H' or 'W' between same-coded letters
-bool isHOrWCharacter(char c) {
-    return std::toupper(c) == 'H' || std::toupper(c) == 'W';
-}
-// Function to check if there is 'H' or 'W' between same-coded letters
-bool checkForHOrWBetweenSameCode(const std::string& name, size_t index, char currentCode) {
-    if (index <= 1) {
-        return false; // No previous character to check
-    }
-
-    char prevChar = name[index - 1];
-    char prevCode = getSoundexCode(prevChar);
-    char prevPrevChar = name[index - 2];
-
-    bool isPrevCharHOrW = isHOrWCharacter(prevChar);
-    bool hasSameSoundexCode = (prevCode == currentCode);
-    bool isPrevPrevCharVowel = isVowel(prevPrevChar) && prevPrevChar != 'Y';
-
-    return (isPrevCharHOrW && hasSameSoundexCode) || (isPrevCharHOrW && isPrevPrevCharVowel);
-}
-
 
 // Function to determine if a Soundex code should be added
 bool shouldAddSoundexCode(char code, char prevCode, const std::string& name, size_t index) {
     return (code != '0' &&
             !checkForAdjacentSameCode(code, prevCode) &&
-            !checkForHOrWBetweenSameCode(name, index, getSoundexCode(code)));
+            !checkForHOrWBetweenSameCode(name, index, createandFetchSoundexcode(code)));
+}
+
+// Function to check if the current code is the same as the previous code
+bool checkForAdjacentSameCode(char currentCode, char prevCode) {
+    return currentCode == prevCode;
+}
+
+bool isHOrWCharacter(char c) {
+    char check = std::toupper(c);
+    return check == 'H' || check == 'W';
+}
+
+// Function to check if the previous character is H or W
+bool isPreviousCharHOrW(const std::string& name, size_t index) {
+    if (index > 0) {
+        return isHOrWCharacter(name[index - 1]);
+    }
+    return false;
+}
+
+// Function to check if the previous character is H or W and the character before that has the same Soundex code as the current code
+bool isPrevPrevCharSameCode(const std::string& name, size_t index, char currentCode) {
+    if (index > 1) {
+        return createandFetchSoundexcode(name[index - 2]) == currentCode;
+    }
+    return false;
+}
+
+// Function to check if there is an H or W character between two characters with the same Soundex code
+bool checkForHOrWBetweenSameCode(const std::string& name, size_t index, char currentCode) {
+    return isPreviousCharHOrW(name, index) && isPrevPrevCharSameCode(name, index, currentCode);
+}
+
+// Function to validate and potentially add the Soundex code
+void validateSoundexCode(const std::string& name, size_t index, std::string& soundex, char& prevCode) {
+    char code = createandFetchSoundexcode(name[index]);
+
+    if (shouldAddSoundexCode(code, prevCode, name, index)) {
+        soundex += code;
+        prevCode = code;
+    }
 }
 
 // Function to encode the name according to Soundex rules
@@ -80,15 +91,10 @@ std::string encodeName(const std::string& name) {
     if (name.empty()) return "";
 
     std::string soundex(1, std::toupper(name[0]));
-    char prevCode = getSoundexCode(name[0]);
+    char prevCode = createandFetchSoundexcode(name[0]);
 
     for (size_t i = 1; i < name.length() && soundex.length() < 4; ++i) {
-        char code = getSoundexCode(name[i]);
-
-        if (shouldAddSoundexCode(code, prevCode, name, i)) {
-            soundex += code;
-            prevCode = code;
-        }
+        validateSoundexCode(name, i, soundex, prevCode);
     }
     return soundex;
 }
